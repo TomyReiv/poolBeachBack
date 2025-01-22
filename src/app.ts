@@ -10,6 +10,10 @@ import session from "express-session";
 import passport from "passport";
 import "./config/passport.config";
 
+import path from "path";
+
+import WebRoute from "./routes/webhook.route";
+
 const app = express();
 
 app.use(
@@ -23,7 +27,9 @@ app.use(
 app.use(passport.initialize());
 app.use(passport.session());
 
+app.use(express.static(path.join(__dirname, "public")));
 
+app.use("/api/webhook", express.raw({ type: "application/json" }), WebRoute);
 
 app.use(errorHandler);
 app.use(cors())
@@ -32,9 +38,16 @@ app.use(express.urlencoded({extended: true}))
 
 app.use("/", IndexRoute);
 
+app.get("/booking-test", (req, res) => {
+  res.sendFile(path.join(__dirname, "../public/booking.html"));
+});
+
 (async () => {
   try {
-    await mongoose.connect(db);
+    await mongoose.connect(db, {
+      maxPoolSize: 20,
+      minPoolSize: 5,
+    });
     console.log("database is connected");
   } catch (error) {
     console.log(error);

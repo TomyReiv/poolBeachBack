@@ -1,8 +1,12 @@
 export interface Sunbed {
-  name: string;
-  price: number;
-  amount: number;
-  status: "available" | "booked";
+  date: Date;
+  entries: entries[];
   createdAt: Date;
   updatedAt: Date;
+}
+
+interface entries {
+  name: string;
+  amount: number;
+  price: number;
 }

@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Booking Test</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 20px;
+        padding: 0;
+        max-width: 600px;
+      }
+      label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: bold;
+      }
+      input,
+      button,
+      select {
+        display: block;
+        margin-bottom: 15px;
+        width: 100%;
+        padding: 8px;
+        font-size: 16px;
+      }
+      button {
+        background-color: #4caf50;
+        color: white;
+        border: none;
+        cursor: pointer;
+      }
+      button:hover {
+        background-color: #45a049;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Create a Booking</h1>
+    <form id="bookingForm">
+      <label for="userId">User ID:</label>
+      <input type="text" id="userId" name="userId" required />
+
+      <select value="sunbeds" id="sunbeds">
+        <option name="general" id="general">General</option>
+        <option name="Tumbona cesped" id="Tumbona cesped">
+          Tumbona cesped
+        </option>
+        <option name="Tumbona matirimo" id="Tumbona matirimo">
+          Tumbona matirimo
+        </option>
+        <option name="Balinesa x2" id="Balinesa x2">
+          Balinesa para 2 pesonas más entrada general
+        </option>
+        <option name="Balinesa x4" id="Balinesa x4">
+          Balinesa para 4 pesonas más entrada general
+        </option>
+      </select>
+
+      <label for="date">Date</label>
+      <input type="date" id="date" name="date" required />
+
+      <label for="totalPrice">Total Price (€):</label>
+      <input
+        type="number"
+        id="totalPrice"
+        name="totalPrice"
+        step="0.01"
+        required
+      />
+
+      <button id="button" type="submit">Create Booking</button>
+    </form>
+
+    <script>
+      const bookingForm = document.getElementById("bookingForm");
+      const button = document.getElementById("button");
+      button.addEventListener("click", async (event) => {
+        event.preventDefault();
+
+        const userId = document.getElementById("userId").value.trim();
+        const sunbed = document.getElementById("sunbeds").value.trim();
+        const totalPrice = parseFloat(
+          document.getElementById("totalPrice").value.trim()
+        );
+        const date = document.getElementById("date").value.trim();
+        const amount = 1;
+        const sunbeds = [{
+          name: sunbed,
+          amount,
+        }];
+
+        try {
+          const response = await fetch("http://localhost:3000/api/booking", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ userId, sunbeds, totalPrice, date }),
+          });
+
+          const data = await response.json();
+
+          if (response.ok) {
+            window.location.href = data.data.sessionUrl; // Redirect to Stripe session URL
+          } else {
+            alert(`Error: ${data.error}`);
+          }
+        } catch (error) {
+          alert(`Request failed: ${error.message}`);
+        }
+      });
+    </script>
+  </body>
+</html>

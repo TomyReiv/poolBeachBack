@@ -1,23 +1,36 @@
 import { Schema, model, SchemaTypes } from "mongoose";
 import { Sunbed } from "../interfaces/sunbed.interface";
 
-const sunbedSchema = new Schema<Sunbed>({
-  name: {
-    type: SchemaTypes.String,
-    required: true,
-  },
-  price: {
-    type: SchemaTypes.Number,
-    required: true,
-  },
-  amount: {
-    type: SchemaTypes.Number,
-    required: true,
+const entriesSchema = new Schema(
+  {
+    name: {
+      type: SchemaTypes.String,
+      required: true,
+      enum: [
+        "General",
+        "Tumbona cesped",
+        "Tumbona maritimo",
+        "Balinesa x2",
+        "Balinesa x4",
+      ],
     },
-  status: {
-    type: SchemaTypes.String,
-    enum: ["available", "booked"],
-    default: "available",
+    amount: { type: SchemaTypes.Number, required: true },
+    price: {
+      type: SchemaTypes.Number,
+      required: true,
+    },
+  },
+  { _id: false }
+);
+
+const sunbedSchema = new Schema<Sunbed>({
+  date: {
+    type: SchemaTypes.Date,
+    required: true,
+  },
+  entries: {
+    type: [entriesSchema],
+    required: true,
   },
   createdAt: {
     type: SchemaTypes.Date,

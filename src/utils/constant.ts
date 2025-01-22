@@ -13,3 +13,6 @@ export const CLOUDINARY_API_SECRET: string = process.env.CLOUDINARY_API_SECRET |
 export const googleClientId: string = process.env.GOOGLE_CLIENT_ID || "";
 export const googleClientSecret: string = process.env.GOOGLE_CLIENT_SECRET || "";
 export const googleCallbackUrl: string = process.env.GOOGLE_CALLBACK_URL || "";
+
+export const STRIPE_SECRET_KEY: string = process.env.STRIPE_SECRET_KEY || "";
+export const stripeWebhookSecret: string = process.env.STRIPE_WEBHOOK_SECRET || "";
