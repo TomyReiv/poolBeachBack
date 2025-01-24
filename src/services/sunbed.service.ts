@@ -3,9 +3,9 @@ import { Sunbed } from "../interfaces/sunbed.interface";
 import SunbedModel from "../models/sunbeds.model";
 
 class SunbedService {
-  async getAllSunbeds(): Promise<Sunbed[]> {
+  async getAllSunbeds(date: any): Promise<Sunbed[]> {
     try {
-      const sunbeds = await SunbedModel.find();
+      const sunbeds = await SunbedModel.find({date});
       if (!sunbeds) throw new Error("No sunbeds found");
       return sunbeds;
     } catch (error) {

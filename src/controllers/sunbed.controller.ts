@@ -9,7 +9,15 @@ const sunbedService = new SunbedService();
 class SunbedController {
   async getSunbeds(req: Request, res: Response) {
     try {
-      const sunbeds = await sunbedService.getAllSunbeds();
+      const date =
+        req.query.date && !isNaN(new Date(req.query.date as string).getTime())
+          ? new Date(req.query.date as string)
+          : new Date();
+
+      const isoDate = date.toISOString();
+      console.log(isoDate);
+      
+      const sunbeds = await sunbedService.getAllSunbeds(isoDate);
       if (!sunbeds)
         return HttpResponse.DATA_BASE_ERROR(res, "Tumbonas no encontradas");
       return HttpResponse.OK(res, sunbeds);
