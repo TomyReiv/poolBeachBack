@@ -149,6 +149,8 @@
 
     ### 7. `POST /api/bookings`
 
+    <!-- Cambie el userId por email en el post -->
+
     - **Description**: Create a new booking.
     - **Inputs**:
       - **Request Body**:

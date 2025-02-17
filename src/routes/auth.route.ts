@@ -1,6 +1,6 @@
 import { Router } from "express";
 import passport from "passport";
-import { handleGoogleCallback } from "../controllers/auth.controller";
+import { checkAuth, handleGoogleCallback } from "../controllers/auth.controller";
 
 const router = Router();
 
@@ -11,7 +11,7 @@ router.get("/google", passport.authenticate("google", { scope: ["profile", "emai
 router.get(
   "/google/callback",
   passport.authenticate("google", { session: false }),
-  handleGoogleCallback
+  handleGoogleCallback,
 );
-
+router.get("/check-auth", checkAuth);
 export default router;

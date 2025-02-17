@@ -2,6 +2,12 @@ import { Request, Response } from "express";
 import { httpResponse } from "../utils/enumsError";
 import { Booking } from "../interfaces/booking.interface";
 import BookingService from "../services/booking.service";
+import Stripe from "stripe";
+import { URL } from "../utils/constant";
+
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string, {
+  apiVersion: "2024-12-18.acacia",
+}); 
 
 const HttpResponse = new httpResponse();
 
@@ -44,22 +50,23 @@ class bookingController {
   async createBooking(req: Request, res: Response) {
     const session = await bookingService.initiateSession();
     try {
-      const { sunbeds, totalPrice, userId, date } = req.body;
-
-      if (!sunbeds || !totalPrice || !userId || !date) {
+      const { sunbeds, totalPrice, email, date, name } = req.body;
+      /* Se cambio userid por email */
+      if (!sunbeds || !totalPrice || !email || !date || !name) {
         throw new Error(
-          "Missing required data (sunbeds, totalPrice, userId or date)"
+          "Missing required data (sunbeds, totalPrice, email or date)"
         );
       }
-      console.log('date en cotroller', date);
       // Mark selected sunbeds as 'processing'
       await bookingService.markSunbedsAsProcessing(date, sunbeds, session);
-
+      console.log("Sunbeds marked as processing");
+      
       // Create the Stripe session
       const stripeSession = await bookingService.createStripeSession(
         sunbeds,
         totalPrice,
-        userId,
+        email,
+        name,
         date
       );
       await session.commitTransaction();
@@ -97,6 +104,32 @@ class bookingController {
       return HttpResponse.OK(res, deletedBooking);
     } catch (error) {
       return HttpResponse.Error(res, (error as Error).message);
+    }
+  }
+
+  async cancelBooking(req: Request, res: Response) {
+    try {
+      const sessionId = req.query.session_id as string;
+      
+      if (!sessionId) {
+        return res.status(400).send("Falta session_id");
+      }
+  
+      // Consultar el estado de la sesión en Stripe
+      const session = await stripe.checkout.sessions.retrieve(sessionId);
+  
+      if (session.payment_status !== "paid") {
+        // Si no está pagado, liberar los sunbeds reservados
+        const sunbeds = JSON.parse(session!.metadata!.sunbeds);
+        const date = new Date(session!.metadata!.date);
+        await bookingService.releaseProcessingSunbeds(date, sunbeds);
+        console.log("Reserva liberada por cancelación.");
+      }
+  
+      res.redirect(`${URL}/Reserva`); // Redirigir al frontend para mostrar el mensaje
+    } catch (error) {
+      console.error("Error en cancel:", error);
+      res.status(500).send("Error al procesar cancelación");
     }
   }
 }

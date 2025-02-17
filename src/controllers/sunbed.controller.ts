@@ -15,8 +15,6 @@ class SunbedController {
           : new Date();
 
       const isoDate = date.toISOString();
-      console.log(isoDate);
-      
       const sunbeds = await sunbedService.getAllSunbeds(isoDate);
       if (!sunbeds)
         return HttpResponse.DATA_BASE_ERROR(res, "Tumbonas no encontradas");

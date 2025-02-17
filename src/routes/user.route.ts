@@ -12,6 +12,7 @@ router.get("/:id", getUser);
 router.post("/", handleUserValidationErrors, userValidator, createUser);
 router.put("/:id", updateUser);
 router.delete("/:id", deleteUser);
-router.post("/login", login);
+router.post("/login", login)
+
 
 export default router;

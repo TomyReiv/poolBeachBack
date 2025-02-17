@@ -1,11 +1,11 @@
 // Si usas TypeScript:
 import mongoose from "mongoose";
-import { db } from "./utils/constant";
+import { db, URL_ORIGEN } from "./utils/constant";
 import { errorHandler } from "./middlewares/errorHandler";
 import express from "express";
 import IndexRoute from "./routes/index.route";
-import cors from "cors"
-
+import cors from "cors";
+import cookieParser from 'cookie-parser';
 import session from "express-session";
 import passport from "passport";
 import "./config/passport.config";
@@ -16,6 +16,27 @@ import WebRoute from "./routes/webhook.route";
 
 const app = express();
 
+app.use(express.static(path.join(__dirname, "public")));
+
+app.use("/api/webhook", express.raw({ type: "application/json" }), WebRoute);
+
+/* app.use(
+  cors({
+    origin: "http://localhost:3000", // Origen permitido
+    methods: ["GET", "POST", "PUT", "DELETE"], // Métodos permitidos
+    credentials: true, // Permite cookies y encabezados de autenticación
+    allowedHeaders: 'Content-Type, Authorization'
+  })
+); */
+const corsOptions = {
+  origin: URL_ORIGEN,  // Aquí especificas el origen permitido
+  credentials: true,  // Permite el envío de credenciales (cookies, encabezados de autenticación, etc.)
+};
+
+app.use(cors(corsOptions));
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
 app.use(
   session({
     secret: "secreto",
@@ -23,24 +44,20 @@ app.use(
     saveUninitialized: true,
   })
 );
+app.use(cookieParser());
 // Inicialización de Passport
 app.use(passport.initialize());
 app.use(passport.session());
 
-app.use(express.static(path.join(__dirname, "public")));
-
-app.use("/api/webhook", express.raw({ type: "application/json" }), WebRoute);
-
-app.use(errorHandler);
-app.use(cors())
-app.use(express.json());
-app.use(express.urlencoded({extended: true}))
-
 app.use("/", IndexRoute);
 
-app.get("/booking-test", (req, res) => {
+/* app.get("/booking-test", (req, res) => {
   res.sendFile(path.join(__dirname, "../public/booking.html"));
 });
+
+app.get("/") */
+
+app.use(errorHandler);
 
 (async () => {
   try {

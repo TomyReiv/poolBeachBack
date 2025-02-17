@@ -1,6 +1,10 @@
 import passport from "passport";
 import { Strategy as GoogleStrategy } from "passport-google-oauth20";
-import { googleCallbackUrl, googleClientId, googleClientSecret } from "../utils/constant";
+import {
+  googleCallbackUrl,
+  googleClientId,
+  googleClientSecret,
+} from "../utils/constant";
 import { findOrCreateUser } from "../services/auth.service";
 
 const GOOGLE_CLIENT_ID = googleClientId;
@@ -18,6 +22,7 @@ passport.use(
         const user = await findOrCreateUser(profile);
         return done(null, user);
       } catch (error) {
+        console.error("Error during Google authentication:", error);
         return done(error, undefined);
       }
     }
@@ -25,6 +30,11 @@ passport.use(
 );
 
 passport.serializeUser((user: any, done) => done(null, user.id));
-passport.deserializeUser((id: string, done) => {
-  done(null, { id }); // O busca al usuario si necesitas más datos
+passport.deserializeUser(async (id: string, done) => {
+  try {
+    done(null, { id });
+  } catch (error) {
+    done(error, undefined);
+  }
+  // O busca al usuario si necesitas más datos
 });

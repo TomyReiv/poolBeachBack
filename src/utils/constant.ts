@@ -16,3 +16,10 @@ export const googleCallbackUrl: string = process.env.GOOGLE_CALLBACK_URL || "";
 
 export const STRIPE_SECRET_KEY: string = process.env.STRIPE_SECRET_KEY || "";
 export const stripeWebhookSecret: string = process.env.STRIPE_WEBHOOK_SECRET || "";
+
+export const URL: string = process.env.URL || "";
+export const URL_BACK: string = process.env.URL_BACK || "";
+export const URL_ORIGEN: string = process.env.URL_ORIGEN || "";
+
+export const GMAIL_USER: string = process.env.GMAIL_USER || "";
+export const GMAIL_PASS: string = process.env.GMAIL_PASS || "";

@@ -27,14 +27,17 @@ class EventService {
   async createEvent(event: Event, image: any): Promise<any> {
     const session = await mongoose.startSession();
     try {
+
       session.startTransaction();
       const imageStore = await cloudinary.uploader.upload(image.path, {
         resource_type: "image",
         folder: `Tracks/Singles`,
       });
+
       if (imageStore) {
         event.image = (imageStore as any).secure_url;
       }
+      
       const newEvent = new eventsModel(event);
       const savedEvent = await newEvent.save({ session });
       await session.commitTransaction();

@@ -13,6 +13,6 @@ router.use("/api/user", UserRoute)
 router.use("/api/event", EventRoute)
 router.use("/api/booking", BookingRoute)
 router.use("/api/sunbed", SundbedRoute)
-router.use("/api/auth", AuthRoute)
+router.use("/auth", AuthRoute)
 
 export default router;

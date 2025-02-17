@@ -10,6 +10,10 @@ const eventSchema = new Schema<Event>({
     type: SchemaTypes.String,
     required: true,
   },
+  menu: {
+    type: SchemaTypes.String,
+    required: true,
+  },
   price: {
     type: SchemaTypes.Number,
     required: true,

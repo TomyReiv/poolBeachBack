@@ -66,8 +66,9 @@ export interface webhookInterface {
   metadata: {
     sunbeds: any;
     date: string;
-    userId: string;
+    email: string;
     totalPrice: any;
+    name: string;
   };
   mode: string;
   payment_intent: string;

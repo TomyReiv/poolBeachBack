@@ -1,9 +1,10 @@
 import { Booking } from "../interfaces/booking.interface";
 import bookingModel from "../models/booking.model";
-import userModel from "../models/user.model";
+/* import userModel from "../models/user.model"; */ //No estoy usando el user todavia
 import Stripe from "stripe";
 import mongoose, { ClientSession } from "mongoose";
 import sunbedsModel from "../models/sunbeds.model"; 
+import { URL, URL_BACK } from "../utils/constant";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string, {
   apiVersion: "2024-12-18.acacia",
@@ -12,7 +13,7 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string, {
 class BookingService {
   async getAllBookings(): Promise<Booking[]> {
     try {
-      const booking = await bookingModel.find().populate("user");
+      const booking = await bookingModel.find()/* .populate("user") */;
       if (!booking) throw new Error("Bookings not found");
       return booking;
     } catch (error) {
@@ -22,7 +23,7 @@ class BookingService {
 
   async getBooking(id: any): Promise<Booking> {
     try {
-      const booking = await bookingModel.findById(id).populate("user");
+      const booking = await bookingModel.findById(id)/* .populate("user") */;
       if (!booking) throw new Error("Booking not found");
       return booking;
     } catch (error) {
@@ -30,7 +31,9 @@ class BookingService {
     }
   }
 
-  async createBooking(booking: Booking): Promise<any> {
+/* No se usa el user */
+
+/*   async createBooking(booking: Booking): Promise<any> {
     const session = await mongoose.startSession();
 
     try {
@@ -60,7 +63,7 @@ class BookingService {
     } finally {
       session.endSession();
     }
-  }
+  } */
 
   async updateBooking(id: any, booking: Booking): Promise<any> {
     const session = await mongoose.startSession();
@@ -109,9 +112,11 @@ class BookingService {
   }
 
   async createStripeSession(
+    /* Cambie userId por email */
     sunbeds: { name: string; amount: number }[],
     totalPrice: number,
-    userId: string,
+    email: string,
+    name: string,
     date: Date
   ) {
 
@@ -135,10 +140,12 @@ class BookingService {
         sunbeds: JSON.stringify(sunbeds),
         date: new Date(date).toISOString(),
         totalPrice,
-        userId,
+        name,
+        email,
       },
-      success_url: `http://localhost:3000/booking-test`,
-      cancel_url: `http://localhost:3000/booking-test`,
+      success_url: `${URL}/Reserva`,
+      cancel_url: `${URL_BACK}/api/booking/cancel?session_id={CHECKOUT_SESSION_ID}`,
+      expires_at: Math.floor(Date.now() / 1000) + 30 * 60, // 30 minutos
     });
     return stripeSession;
   }
@@ -152,7 +159,7 @@ class BookingService {
     const dateSercah = new Date(date).toISOString();
 
     for (const type of types) {
-      const res = await sunbedsModel.findOne({ date : dateSercah });
+
       const result = await sunbedsModel.updateOne(
         {
           date: dateSercah, // Fecha específica
@@ -165,8 +172,7 @@ class BookingService {
         },
         { session } // Usamos una sesión (transacción)
       );
-      console.log('result', res);
-      
+
       if (result.modifiedCount === 0) {
         throw new Error(
           `No hay suficientes entradas para '${type.name}' en la fecha especificada.`
@@ -186,7 +192,7 @@ class BookingService {
     for (const type of types) {
       await sunbedsModel.updateOne(
         {
-          dateSercah, // Fecha específica
+          date:dateSercah, // Fecha específica
           "entries.name": type.name,
         },
         {
@@ -197,41 +203,19 @@ class BookingService {
     }
   }
 
-  
-
-
-  /* async markSunbedsAsProcessing(
-    sunbeds: any,
-    session: ClientSession
-  ): Promise<void> {
-    await sunbedsModel.updateMany(
-      { _id: { $in: sunbeds } },
-      { $set: { status: "processing" } },
-      { session }
-    ); 
-  }*/
-
-  /*   async releaseProcessingSunbeds(sunbeds: any[]): Promise<void> {
-    if (!sunbeds || sunbeds.length === 0) return;
-    await sunbedsModel.updateMany(
-      { _id: { $in: sunbeds } },
-      { $set: { status: "available" } }
-    );
-  } */
-
   async finalizeBooking(data: any): Promise<any> {
-    const userId = data.userId;
+    const email = data.email;
     const date = data.date;
+    const name = data.name;
 
     const booking = new bookingModel({
-      user: userId,
+      email: email,
+      name: name,
       type: data.type,
       amount: data.totalPrice!,
       status: "paid",
       date,
     });
-    console.log(booking);
-
     await booking.save();
 
     return booking;

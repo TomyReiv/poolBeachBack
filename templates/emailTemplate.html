@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Reserva en PoolBeach Port Saplaya</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+  <body class="bg-gray-100">
+    <div
+      class="max-w-lg mx-auto my-8 bg-white rounded-lg shadow-lg overflow-hidden"
+    >
+      <div
+        class="bg-green-600 text-white text-center py-6 text-2xl font-semibold"
+      >
+        Reserva en PoolBeach Port Saplaya
+      </div>
+      <div class="p-6 text-center text-gray-800">
+        <p class="text-lg font-medium">¡Hola, {{name}}!</p>
+        <p class="mt-2 text-gray-600">
+          Muchas gracias por su reserva.
+          <a
+            class="text-sky-500"
+            href="https://www.google.com/maps/place//data=!4m2!3m1!1s0xd60475eb8965613:0x6e8892c5651bb6dd?source=g.page.share"
+            >Encuéntranos al final del Paseo Marítimo de Playa Norte. Port Saplaya, Alboraya. VALENCIA.</a
+          >
+        </p>
+      </div>
+      <div class="bg-gray-100 p-5 mx-5 rounded-lg">
+        <p class="text-gray-700">
+          <strong>Fecha de la Reserva:</strong> {{bookingDate}}
+        </p>
+        <p class="text-gray-700">
+          <strong>Sunbeds Reservados:</strong> {{sunbeds}}
+        </p>
+        <p class="text-gray-700">
+          <strong>Total Pagado:</strong> {{totalPrice}}
+        </p>
+      </div>
+  
+      <div class="bg-gray-200 text-center py-4 text-sm text-gray-700">
+        <p>Si tienes alguna pregunta, no dudes en contactarnos.</p>
+        <p class="font-semibold">El equipo de Soporte</p>
+      </div>
+    </div>
+  </body>
+</html>

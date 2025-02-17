@@ -1,10 +1,11 @@
 import { Router } from "express";
-import multer from "multer";
 import EventController from "../controllers/event.controller";
+import multer from "multer";
+
+const upload = multer({ dest: "uploads/" });
 
 const router = Router();
 
-const upload = multer({ dest: "uploads/" });
 
 const eventController = new EventController();
 

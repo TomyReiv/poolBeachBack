@@ -3,7 +3,7 @@ import { Booking } from "../interfaces/booking.interface";
 
 const reservSubSchema = new Schema(
   {
-    sunbed: {
+    name: {
       type: SchemaTypes.String,
       required: true,
     },
@@ -17,9 +17,11 @@ const reservSubSchema = new Schema(
 );
 
 const bookingSchema = new Schema<Booking>({
-  user: {
-    type: SchemaTypes.ObjectId,
-    ref: "User",
+  email: {
+    type: SchemaTypes.String,
+  },
+  name: {
+    type: SchemaTypes.String,
   },
   type: [reservSubSchema],
   date: {

@@ -105,13 +105,16 @@ class UserController {
       res.cookie(jwtKey as string, token, {
         maxAge: 1000 * 60 * 60, // 1 hora
         httpOnly: false,
-        sameSite: "none",
+        sameSite: "strict",
+        secure: true
       });
       return HttpResponse.OK(res, response);
     } catch (error) {
       return HttpResponse.Error(res, (error as Error).message);
     }
   }
+
+
 }
 
 export default UserController;

@@ -34,8 +34,9 @@ class EventController {
     try {
       const event: Event = req.body as Event;
       const image = req.file;
+      const { title, description, date, price, menu } = event;
       if (!image) return HttpResponse.BAD_REQUEST_ERROR(res, "Imagen requerida");
-      const newEvent = await eventService.createEvent(event, image);
+      const newEvent = await eventService.createEvent({ title, description, date, price, menu }, image);
       return HttpResponse.OK(res, newEvent);
     } catch (error) {
       return HttpResponse.Error(res, (error as Error).message);
