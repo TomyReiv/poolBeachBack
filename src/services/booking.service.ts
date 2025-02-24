@@ -3,7 +3,7 @@ import bookingModel from "../models/booking.model";
 /* import userModel from "../models/user.model"; */ //No estoy usando el user todavia
 import Stripe from "stripe";
 import mongoose, { ClientSession } from "mongoose";
-import sunbedsModel from "../models/sunbeds.model"; 
+import sunbedsModel from "../models/sunbeds.model";
 import { URL, URL_BACK } from "../utils/constant";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string, {
@@ -13,7 +13,7 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string, {
 class BookingService {
   async getAllBookings(): Promise<Booking[]> {
     try {
-      const booking = await bookingModel.find()/* .populate("user") */;
+      const booking = await bookingModel.find(); /* .populate("user") */
       if (!booking) throw new Error("Bookings not found");
       return booking;
     } catch (error) {
@@ -23,7 +23,7 @@ class BookingService {
 
   async getBooking(id: any): Promise<Booking> {
     try {
-      const booking = await bookingModel.findById(id)/* .populate("user") */;
+      const booking = await bookingModel.findById(id); /* .populate("user") */
       if (!booking) throw new Error("Booking not found");
       return booking;
     } catch (error) {
@@ -31,9 +31,9 @@ class BookingService {
     }
   }
 
-/* No se usa el user */
+  /* No se usa el user */
 
-/*   async createBooking(booking: Booking): Promise<any> {
+  /*   async createBooking(booking: Booking): Promise<any> {
     const session = await mongoose.startSession();
 
     try {
@@ -91,8 +91,15 @@ class BookingService {
     const session = await mongoose.startSession();
     try {
       session.startTransaction();
+      const bookingById = await bookingModel.findById(id);
       const booking = await bookingModel.findByIdAndDelete(id, { session });
       if (!booking) throw new Error(`No se encontró la reserva con ID ${id}`);
+      if (bookingById) {
+        this.releaseProcessingSunbeds(bookingById.date, bookingById.type);
+        console.log("Sunbeds released");
+        
+      }
+
       await session.commitTransaction();
       return { msg: "Reserva eliminada" };
     } catch (error) {
@@ -119,7 +126,6 @@ class BookingService {
     name: string,
     date: Date
   ) {
-
     const stripeSession = await stripe.checkout.sessions.create({
       payment_method_types: ["card"],
       mode: "payment",
@@ -155,11 +161,9 @@ class BookingService {
     types: { name: string; amount: number }[],
     session: ClientSession
   ): Promise<void> {
-    
     const dateSercah = new Date(date).toISOString();
 
     for (const type of types) {
-
       const result = await sunbedsModel.updateOne(
         {
           date: dateSercah, // Fecha específica
@@ -184,15 +188,12 @@ class BookingService {
   /**
    * Reversa las entradas en caso de error durante la transacción de compra.
    */
-  async releaseProcessingSunbeds(
-    date: Date,
-    types: any
-  ): Promise<void> {
+  async releaseProcessingSunbeds(date: Date, types: any): Promise<void> {
     const dateSercah = new Date(date).toISOString();
     for (const type of types) {
       await sunbedsModel.updateOne(
         {
-          date:dateSercah, // Fecha específica
+          date: dateSercah, // Fecha específica
           "entries.name": type.name,
         },
         {

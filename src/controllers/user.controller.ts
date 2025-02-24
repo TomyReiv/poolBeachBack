@@ -90,7 +90,7 @@ class UserController {
       const isMatch = await bcrypt.compare(password, user.password);
       if (!isMatch)
         return HttpResponse.BAD_REQUEST_ERROR(res, "Contraseña incorrecta");
-      const token = jwt.sign({ id: user._id }, jwtKey as string);
+      const token = jwt.sign({ id: user._id, rol:user.role }, jwtKey as string);
       const response = {
         token: token,
         user: {

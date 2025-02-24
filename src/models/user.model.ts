@@ -21,7 +21,7 @@ const userSchema = new Schema<User>({
   },
   role: {
     type: SchemaTypes.String,
-    enum: ["user", "admin"],
+    enum: ["user", "Admin"],
     default: "user",
   },
   bookings: [
